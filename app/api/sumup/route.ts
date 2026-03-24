@@ -101,7 +101,9 @@ async function fetchEmployeeAccounts(apiKey: string): Promise<Record<string, str
   const cached = getEmpCached(apiKey);
   if (cached) return cached;
 
+  // Always start with env overrides — these take priority
   const overrides = getLocationEnvOverrides();
+
   try {
     const res = await fetch("https://api.sumup.com/v0.1/me/accounts", {
       headers: { Authorization: `Bearer ${apiKey}` },
@@ -109,13 +111,13 @@ async function fetchEmployeeAccounts(apiKey: string): Promise<Record<string, str
     });
     if (!res.ok) { setEmpCached(apiKey, overrides); return overrides; }
     const accounts: SumUpAccount[] = await res.json();
-    const map: Record<string, string> = {};
+    // Merge: env overrides win over API data
+    const map: Record<string, string> = { ...overrides };
     for (const acc of accounts) {
       const key = acc.username.toLowerCase();
-      map[key] = overrides[key] ?? acc.nickname ?? acc.username;
-    }
-    for (const [email, name] of Object.entries(overrides)) {
-      if (!map[email]) map[email] = name;
+      if (!map[key]) {
+        map[key] = acc.nickname ?? acc.username;
+      }
     }
     setEmpCached(apiKey, map);
     return map;
