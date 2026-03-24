@@ -82,16 +82,16 @@ function parseProductSummary(summary?: string): { operator?: string; location?: 
   return {};
 }
 
-// SUMUP_LOCATIONS format: "email1=Name1,email2=Name2,..."
+// SUMUP_LOCATION_1=email:Name, SUMUP_LOCATION_2=email:Name, ...
 function getLocationEnvOverrides(): Record<string, string> {
   const overrides: Record<string, string> = {};
-  const raw = process.env.SUMUP_LOCATIONS;
-  if (!raw) return overrides;
-  for (const part of raw.split(",")) {
-    const sep = part.indexOf("=");
+  for (let i = 1; i <= 20; i++) {
+    const raw = process.env[`SUMUP_LOCATION_${i}`];
+    if (!raw) continue;
+    const sep = raw.indexOf(":");
     if (sep === -1) continue;
-    const email = part.slice(0, sep).trim().toLowerCase();
-    const name = part.slice(sep + 1).trim();
+    const email = raw.slice(0, sep).trim().toLowerCase();
+    const name = raw.slice(sep + 1).trim();
     if (email && name) overrides[email] = name;
   }
   return overrides;
