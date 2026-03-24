@@ -86,7 +86,7 @@ function parseProductSummary(summary?: string): { operator?: string; location?: 
 function getLocationEnvOverrides(): Record<string, string> {
   const overrides: Record<string, string> = {};
   for (let i = 1; i <= 20; i++) {
-    const raw = process.env[`SUMUP_LOCATION_${i}`];
+    const raw = process.env[`SUMUP_LOCATION_${i}`] ?? process.env[`SUMUP_LOCATION${i}`];
     if (!raw) continue;
     const sep = raw.indexOf(":");
     if (sep === -1) continue;
