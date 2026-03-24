@@ -112,7 +112,7 @@ async function fetchEmployeeAccounts(apiKey: string): Promise<Record<string, str
     const map: Record<string, string> = {};
     for (const acc of accounts) {
       const key = acc.username.toLowerCase();
-      map[acc.username] = overrides[key] ?? acc.nickname ?? acc.username;
+      map[key] = overrides[key] ?? acc.nickname ?? acc.username;
     }
     for (const [email, name] of Object.entries(overrides)) {
       if (!map[email]) map[email] = name;
